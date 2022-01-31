@@ -4,6 +4,48 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Backend\UserController;
 use App\Http\Controllers\Backend\ProfileController;
+use App\Http\Controllers\Backend\Setup\StudentClassController;
+use App\Http\Controllers\Backend\Setup\StudentYearController;
+use App\Http\Controllers\Backend\Setup\StudentGroupController;
+use App\Http\Controllers\Backend\Setup\StudentShiftController;
+use App\Http\Controllers\Backend\Setup\FeeCategoryController;
+use App\Http\Controllers\Backend\Setup\FeeAmountController;
+use App\Http\Controllers\Backend\Setup\ExamTypeController;
+use App\Http\Controllers\Backend\Setup\StudentSubjectController;
+use App\Http\Controllers\Backend\Setup\AssignSubjectController;
+use App\Http\Controllers\Backend\Setup\DesignationController;
+
+
+use App\Http\Controllers\Backend\Student\StudentRegController;
+use App\Http\Controllers\Backend\Student\StudentRollController;
+use App\Http\Controllers\Backend\Student\RegistrationFeeController;
+use App\Http\Controllers\Backend\Student\MonthlyFeeController;
+use App\Http\Controllers\Backend\Student\ExamFeeController;
+
+
+
+use App\Http\Controllers\Backend\Employee\EmployeeRegController;
+use App\Http\Controllers\Backend\Employee\EmployeeSalaryController;
+use App\Http\Controllers\Backend\Employee\EmployeeleaveController;
+use App\Http\Controllers\Backend\Employee\EmployeeAttendanceController;
+use App\Http\Controllers\Backend\Employee\MonthlySalaryController;
+
+
+use App\Http\Controllers\Backend\Marks\MarksController;
+use App\Http\Controllers\Backend\Marks\GradeController;
+
+use App\Http\Controllers\Backend\DefaultController;
+
+use App\Http\Controllers\Backend\Account\StudentFeeController;
+use App\Http\Controllers\Backend\Account\AccountSalaryController;
+use App\Http\Controllers\Backend\Account\OtherCostController;
+
+
+use App\Http\Controllers\Backend\Report\ProfitController;
+use App\Http\Controllers\Backend\Report\MarkSheetController;
+use App\Http\Controllers\Backend\Report\AttenReportController;
+use App\Http\Controllers\Backend\Report\ResultReportController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,6 +56,10 @@ use App\Http\Controllers\Backend\ProfileController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::group(['middleware' => 'prevent-back-history'],function(){
+  
+
 
 Route::get('/', function () {
     return view('auth.login');
@@ -26,6 +72,10 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 //log out
 
 Route::get('/admin/logout',[AdminController::class, 'Logout'])->name('admin.logout');
+
+
+
+Route::group(['middleware' => 'auth'],function(){
 
     // user management 
 
@@ -48,3 +98,325 @@ Route::get('/admin/logout',[AdminController::class, 'Logout'])->name('admin.logo
         Route::post('/password/update', [ProfileController::class,'PasswordUpdate'])->name('password.update');
         
     });
+
+    // setup management 
+
+    Route::prefix('setups')->group(function(){
+        Route::get('student/class/view', [StudentClassController::class,'ViewStudent'])->name('student.class.view');
+        Route::get('student/class/add', [StudentClassController::class,'StudentClassAdd'])->name('student.class.add');
+        Route::post('student/class/store', [StudentClassController::class,'StudentClassStore'])->name('store.student.class');
+        Route::get('student/class/edit/{id}', [StudentClassController::class,'StudentClassEdit'])->name('student.class.edit');
+        Route::post('student/class/update/{id}', [StudentClassController::class,'StudentClassUpdate'])->name('update.student.class');
+        Route::get('student/class/delete/{id}', [StudentClassController::class,'StudentClassDelete'])->name('student.class.delete');
+
+        // student year
+
+        Route::get('student/year/view', [StudentYearController::class,'ViewYear'])->name('student.year.view');
+        Route::get('student/year/add', [StudentYearController::class,'StudentYearAdd'])->name('student.year.add');
+        Route::post('student/year/store', [StudentYearController::class,'StudentYearStore'])->name('store.student.year');
+        Route::get('student/year/edit/{id}', [StudentYearController::class,'StudentYearEdit'])->name('student.year.edit');
+        Route::post('student/year/update/{id}', [StudentYearController::class,'StudentYearUpdate'])->name('update.student.year');
+        Route::get('student/year/delete/{id}', [StudentYearController::class,'StudentYearDelete'])->name('student.year.delete');
+
+        // student group
+
+        Route::get('student/group/view', [StudentGroupController::class,'ViewGroup'])->name('student.group.view');
+        Route::get('student/group/add', [StudentGroupController::class,'StudentGroupAdd'])->name('student.group.add');
+        Route::post('student/group/store', [StudentGroupController::class,'StudentGroupStore'])->name('store.student.group');
+        Route::get('student/group/edit/{id}', [StudentGroupController::class,'StudentGroupEdit'])->name('student.group.edit');
+        Route::post('student/group/update/{id}', [StudentGroupController::class,'StudentGroupUpdate'])->name('update.student.group');
+        Route::get('student/group/delete/{id}', [StudentGroupController::class,'StudentGroupDelete'])->name('student.group.delete');
+
+        // student shift
+
+        Route::get('student/shift/view', [StudentShiftController::class,'ViewShift'])->name('student.shift.view');
+        Route::get('student/shift/add', [StudentShiftController::class,'StudentShiftAdd'])->name('student.shift.add');
+        Route::post('student/shift/store', [StudentShiftController::class,'StudentShiftStore'])->name('store.student.shift');
+        Route::get('student/shift/edit/{id}', [StudentShiftController::class,'StudentShiftEdit'])->name('student.shift.edit');
+        Route::post('student/shift/update/{id}', [StudentShiftController::class,'StudentShiftUpdate'])->name('update.student.shift');
+        Route::get('student/shift/delete/{id}', [StudentShiftController::class,'StudentShiftDelete'])->name('student.shift.delete');
+
+        // student fee
+
+        Route::get('fee/category/view', [FeeCategoryController::class,'ViewFeeCat'])->name('fee.category.view');
+        Route::get('fee/category/add', [FeeCategoryController::class,'AddFeeCat'])->name('fee.category.add');
+        Route::post('fee/category/store', [FeeCategoryController::class,'StoreFeeCat'])->name('fee.category.store');
+        Route::get('fee/category/edit/{id}', [FeeCategoryController::class,'EditFeeCat'])->name('fee.category.edit');
+        Route::post('fee/category/update/{id}', [FeeCategoryController::class,'UpdateFeeCat'])->name('update.fee.category');
+        Route::get('fee/category/delete/{id}', [FeeCategoryController::class,'DeleteFeeCat'])->name('fee.category.delete');
+
+        //  fee amount
+
+        Route::get('fee/amount/view', [FeeAmountController::class,'ViewFeeAmount'])->name('fee.amount.view');
+        Route::get('fee/amount/add', [FeeAmountController::class,'AddFeeAmount'])->name('fee.amount.add');
+        Route::post('fee/amount/store', [FeeAmountController::class,'StoreFeeAmount'])->name('fee.amount.store');
+        Route::get('fee/amount/edit/{fee_category_id}', [FeeAmountController::class,'EditFeeAmount'])->name('fee.amount.edit');
+        Route::post('fee/amount/update/{fee_category_id}', [FeeAmountController::class,'UpdateFeeAmount'])->name('fee.amount.update');
+        Route::get('fee/amount/details/{fee_category_id}', [FeeAmountController::class, 'DetailsFeeAmount'])->name('fee.amount.details');
+
+        // exam type
+
+        Route::get('exam/type/view', [ExamTypeController::class,'ViewExamType'])->name('exam.type.view');
+        Route::get('exam/type/add', [ExamTypeController::class,'AddExamType'])->name('exam.type.add');
+        Route::post('exam/type/store', [ExamTypeController::class,'StoreExamType'])->name('exam.type.store');
+        Route::get('exam/type/edit/{id}', [ExamTypeController::class,'EditExamType'])->name('exam.type.edit');
+        Route::post('exam/type/update/{id}', [ExamTypeController::class,'UpdateExamType'])->name('exam.type.update');
+        Route::get('exam/type/delete/{id}', [ExamTypeController::class,'DeleteExamType'])->name('exam.type.delete');
+
+         // Student  Subject
+
+        Route::get('student/subject/view', [StudentSubjectController::class,'ViewStudentSubject'])->name('student.subject.view');
+        Route::get('student/subject/add', [StudentSubjectController::class,'AddStudentSubject'])->name('student.subject.add');
+        Route::post('student/subject/store', [StudentSubjectController::class,'StoreStudentSubject'])->name('student.subject.store');
+        Route::get('student/subject/edit/{id}', [StudentSubjectController::class,'EditStudentSubject'])->name('student.subject.edit');
+        Route::post('student/subject/update/{id}', [StudentSubjectController::class,'UpdateStudentSubject'])->name('student.subject.update');
+        Route::get('student/subject/delete/{id}', [StudentSubjectController::class,'DeleteStudentSubject'])->name('student.subject.delete');
+       
+        //  assign subject
+
+        Route::get('assign/subject/view', [AssignSubjectController::class,'ViewAssignSub'])->name('assign.subject.view');
+        Route::get('assign/subject/add', [AssignSubjectController::class,'AddAssignSub'])->name('assign.subject.add');
+        Route::post('assign/subject/store', [AssignSubjectController::class,'StoreAssignSub'])->name('assign.subject.store');
+        Route::get('assign/subject/edit/{class_id}', [AssignSubjectController::class,'EditAssignSub'])->name('assign.subject.edit');
+        Route::post('assign/subject/update/{class_id}', [AssignSubjectController::class,'UpdateAssignSub'])->name('assign.subject.update');
+        Route::get('assign/subject/details/{fee_category_id}', [AssignSubjectController::class, 'DetailsAssignSub'])->name('assign.subject.details');
+    
+         //  designation
+    
+        Route::get('designation/view', [DesignationController::class,'ViewDesignation'])->name('designation.view');
+        Route::get('designation/add', [DesignationController::class,'AddDesignation'])->name('designation.add');
+        Route::post('designation/store', [DesignationController::class,'StoreDesignation'])->name('designation.store');
+        Route::get('designation/edit/{id}', [DesignationController::class,'EditDesignation'])->name('designation.edit');
+        Route::post('designation/update/{id}', [DesignationController::class,'UpdateDesignation'])->name('designation.update');
+        Route::get('designation/delete/{id}', [DesignationController::class,'DeleteDesignation'])->name('designation.delete');
+    
+    
+    
+    });
+
+
+        //Student registration
+
+    Route::prefix('students')->group(function(){
+
+        Route::get('/reg/view', [StudentRegController::class,'StudentRegView'])->name('student.registration.view');
+        Route::get('/reg/add', [StudentRegController::class,'StudentRegViewAdd'])->name('student.registration.add');
+        Route::post('/reg/store', [StudentRegController::class,'StudentRegStore'])->name('student.registration.store');
+
+        Route::get('/year/class/wise', [StudentRegController::class,'StudentClassYearWise'])->name('student.year.class.wise');
+
+        Route::get('/reg/edit/{student_id}', [StudentRegController::class,'StudentRegEdit'])->name('student.registration.edit');
+        Route::post('/reg/update/{student_id}', [StudentRegController::class,'StudentRegUpdate'])->name('student.registration.update');
+        
+        Route::get('/reg/promotion/{student_id}', [StudentRegController::class,'StudentRegPromotion'])->name('student.registration.promotion');
+        Route::post('/reg/update/promotion/{student_id}', [StudentRegController::class,'StudentUpdatePromotion'])->name('Promotion.student.registration');
+
+        Route::get('/reg/details/{student_id}', [StudentRegController::class,'StudentRegDetails'])->name('student.registration.details');
+
+        // Roll Generate
+
+        Route::get('/roll/generate/view', [StudentRollController::class,'StudentRollView'])->name('roll.generate.view');
+        Route::get('/reg/getstudents', [StudentRollController::class,'GetStudents'])->name('student.registration.getstudents'); 
+        Route::post('/roll/generate/store', [StudentRollController::class,'StudentRollStore'])->name('roll.generate.store');
+
+
+         // Registration Fee
+
+        Route::get('/reg/fee/view', [RegistrationFeeController::class, 'RegFeeView'])->name('registration.fee.view');
+        Route::get('/reg/fee/classwisedata', [RegistrationFeeController::class, 'RegFeeClassData'])->name('student.registration.fee.classwise.get');
+        Route::get('/reg/fee/payslip', [RegistrationFeeController::class, 'RegFeePayslip'])->name('student.registration.fee.payslip');
+
+         // Monthly Fee
+
+        Route::get('/monthly/fee/view', [MonthlyFeeController::class, 'MonthlyFeeView'])->name('monthly.fee.view');
+        Route::get('/monthly/fee/classwisedata', [MonthlyFeeController::class, 'MonthlyFeeClassData'])->name('student.monthly.fee.classwise.get');
+        Route::get('/monthly/fee/payslip', [MonthlyFeeController::class, 'MonthlyFeePayslip'])->name('student.monthly.fee.payslip');
+
+         // exam Fee
+
+        Route::get('/exam/fee/view', [ExamFeeController::class, 'ExamFeeView'])->name('exam.fee.view');
+        Route::get('/exam/fee/classwisedata', [ExamFeeController::class, 'ExamFeeClassData'])->name('student.exam.fee.classwise.get');
+        Route::get('/exam/fee/payslip', [ExamFeeController::class, 'ExamFeePayslip'])->name('student.exam.fee.payslip');
+
+
+
+    });
+
+
+     //Employee
+
+    Route::prefix('employees')->group(function(){
+
+        Route::get('reg/employee/view', [EmployeeRegController::class,'EmployeeView'])->name('employee.registration.view');
+        Route::get('reg/employee/add', [EmployeeRegController::class,'EmployeeAdd'])->name('employee.registration.add');
+        Route::post('reg/employee/store', [EmployeeRegController::class,'EmployeeStore'])->name('employee.registration.store');
+        Route::get('reg/employee/edit/{id}', [EmployeeRegController::class,'EmployeeEdit'])->name('employee.registration.edit');
+        Route::post('reg/employee/update/{id}', [EmployeeRegController::class,'EmployeeUpdate'])->name('employee.registration.update');
+        Route::get('reg/employee/details/{id}', [EmployeeRegController::class,'EmployeeDetails'])->name('employee.registration.details');
+        
+   //Employee salary
+
+        Route::get('salary/employee/view', [EmployeeSalaryController::class,'SalaryView'])->name('employee.salary.view');
+
+        Route::get('salary/employee/increment/{id}', [EmployeeSalaryController::class,'SalaryIncrement'])->name('employee.salary.increment');
+
+        Route::post('salary/employee/store/{id}', [EmployeeSalaryController::class,'SalaryStore'])->name('update.increment.store');
+
+        Route::get('salary/employee/details/{id}', [EmployeeSalaryController::class,'SalaryDetails'])->name('employee.salary.details');
+
+
+
+    //Employee Leave
+
+       Route::get('leave/employee/view', [EmployeeLeaveController::class,'LeaveView'])->name('employee.leave.view'); 
+       Route::get('leave/employee/add', [EmployeeLeaveController::class,'LeaveAdd'])->name('employee.leave.add'); 
+       Route::post('leave/employee/store', [EmployeeLeaveController::class,'LeaveStore'])->name('store.employee.leave');
+       Route::get('leave/employee/edit/{id}', [EmployeeLeaveController::class,'LeaveEdit'])->name('employee.leave.edit');
+       Route::post('leave/employee/update/{id}', [EmployeeLeaveController::class,'LeaveUpdate'])->name('update.employee.leave');
+       Route::get('leave/employee/delete/{id}', [EmployeeLeaveController::class,'LeaveDelete'])->name('employee.leave.delete'); 
+
+
+
+    // Employee Attendance
+
+       Route::get('attendance/employee/view', [EmployeeAttendanceController::class,'AttendanceView'])->name('employee.attendance.view');
+       Route::get('attendance/employee/add', [EmployeeAttendanceController::class,'AttendanceAdd'])->name('employee.attendance.add');
+       Route::post('attendance/employee/store', [EmployeeAttendanceController::class,'AttendanceStore'])->name('store.employee.attendance');
+       
+       Route::get('attendance/employee/edit/{date}', [EmployeeAttendanceController::class, 'AttendanceEdit'])->name('employee.attendance.edit');
+
+      Route::get('attendance/employee/details/{date}', [EmployeeAttendanceController::class, 'AttendanceDetails'])->name('employee.attendance.details');
+
+
+      // Employee Monthly Salary
+
+      Route::get('monthly/salary/view', [MonthlySalaryController::class,'MonthlySalaryView'])->name('employee.monthly.salary');
+
+      Route::get('monthly/salary/get', [MonthlySalaryController::class,'MonthlySalaryGet'])->name('employee.monthly.salary.get');
+
+       Route::get('monthly/salary/payslip/{employee_id}', [MonthlySalaryController::class,'MonthlySalaryPayslip'])->name('employee.monthly.salary.payslip');
+
+    });
+
+// Marks Management
+
+ Route::prefix('marks')->group(function(){
+    
+    Route::get('marks/entry/add', [MarksController::class,'MarksAdd'])->name('marks.entry.add');
+
+    Route::post('marks/entry/store', [MarksController::class,'MarksStore'])->name('marks.entry.store');
+
+    Route::get('marks/entry/edit', [MarksController::class,'MarksEdit'])->name('marks.entry.edit');
+
+    Route::get('marks/getstudents/edit', [MarksController::class,'MarksEditGetstudents'])->name('student.edit.getstudents');
+
+    Route::post('marks/entry/update', [MarksController::class,'MarksUpdate'])->name('marks.entry.update');
+
+    // marks grade
+
+    Route::get('marks/grade/view', [GradeController::class,'MarksGradeView'])->name('marks.entry.grade');
+
+    Route::get('marks/grade/add', [GradeController::class,'MarksGradeAdd'])->name('marks.grade.add');
+
+    Route::post('marks/grade/store', [GradeController::class,'MarksGradeStore'])->name('store.marks.grade');
+
+    Route::get('marks/grade/edit/{id}', [GradeController::class,'MarksGradeEdit'])->name('marks.grade.edit');
+
+    Route::post('marks/grade/update/{id}', [GradeController::class,'MarksGradeUpdate'])->name('update.marks.grade');
+
+ });
+
+ Route::get('marks/getsubject', [DefaultController::class,'GetSubject'])->name('marks.getsubject');
+
+ Route::get('student/marks/getstudents', [DefaultController::class,'GetStudents'])->name('student.marks.getstudents');
+
+
+
+// Accounts Management
+
+ Route::prefix('accounts')->group(function(){
+    
+    Route::get('students/fee/view', [StudentFeeController::class,'StudentFeeView'])->name('student.fee.view');
+
+    Route::get('students/fee/add', [StudentFeeController::class,'StudentFeeAdd'])->name('student.fee.add');
+
+    Route::get('students/fee/getstudent', [StudentFeeController::class,'StudentFeeGetStudent'])->name('account.fee.getstudent');
+
+    Route::post('students/fee/store', [StudentFeeController::class,'StudentFeeStore'])->name('account.fee.store');
+
+
+    // employee salary
+
+    Route::get('account/salary/view', [AccountSalaryController::class,'AccountSalaryView'])->name('account.salary.view');
+
+    Route::get('account/salary/add', [AccountSalaryController::class,'AccountSalaryAdd'])->name('account.salary.add');
+
+    Route::get('account/salary/getemployee', [AccountSalaryController::class,'AccountSalaryGetEmployee'])->name('account.salary.getemployee');
+
+    Route::post('account/salary/store', [AccountSalaryController::class,'AccountSalaryStore'])->name('account.salary.store');
+
+
+    // other cost
+
+    Route::get('other/cost/view', [OtherCostController::class,'OtherCostView'])->name('other.cost.view');
+
+    Route::get('other/cost/add', [OtherCostController::class,'OtherCostAdd'])->name('other.cost.add');
+
+    Route::post('other/cost/store', [OtherCostController::class,'OtherCostStore'])->name('store.other.cost');
+
+    Route::get('other/cost/edit/{id}', [OtherCostController::class,'OtherCostEdit'])->name('edit.other.cost');
+
+    Route::post('other/cost/update/{id}', [OtherCostController::class,'OtherCostUpdate'])->name('update.other.cost');
+
+
+ });  // end Accounts Management
+
+
+
+// report monthly-yearly profite 
+
+ Route::prefix('reports')->group(function(){
+    
+    Route::get('monthly/profit/view', [ProfitController::class,'MonthlyProfitView'])->name('monthly.profit.view');
+
+    Route::get('monthly/profit/datewais', [ProfitController::class,'MonthlyProfitDatewais'])->name('report.profit.datewais.get');
+
+    Route::get('monthly/profit/pdf', [ProfitController::class,'MonthlyProfitPdf'])->name('report.profit.pdf');
+
+
+
+    // marksheet generate
+
+    Route::get('marksheet/generate/view', [MarkSheetController::class,'MarkSheetView'])->name('marksheet.generate.view');
+
+    Route::get('marksheet/generate/get', [MarkSheetController::class,'MarkSheetGet'])->name('report.marksheet.get');
+
+
+    // attendance report
+
+    Route::get('attendance/report/view', [AttenReportController::class,'AttenReportView'])->name('attendance.report.view');
+
+    Route::get('attendance/report/get', [AttenReportController::class,'AttenReportGet'])->name('report.attendance.get');
+
+
+    // student result
+
+    Route::get('student/result/view', [ResultReportController::class,'ResultView'])->name('student.result.view');
+
+    Route::get('student/result/get', [ResultReportController::class,'ResultGet'])->name('report.student.result.get');
+
+
+    // student ID card
+
+    Route::get('student/result/view', [ResultReportController::class,'IdcardView'])->name('student.idcard.view');
+
+    Route::get('student/idcard/get', [ResultReportController::class, 'IdcardGet'])->name('report.student.idcard.get');
+
+
+ });  //report end monthly-yearly profite
+
+
+}); // end middleware
+
+
+});  // prevent back midleware
